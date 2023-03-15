@@ -1,9 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
-
-
 <script setup>
-
-import { ref } from "vue";
+import { ref, defineEmits } from "vue";
 
 import PokemonDetail from "../components/PokemonDetail.vue";
 import PokemonList from "../components/PokemonList.vue";
@@ -11,25 +8,28 @@ import PokemonSearch from "../components/PokemonSearch.vue";
 
 // Modal PokemonDetail
 const showModal = ref(false);
-const pokeDetail = ref(null)
+const pokeDetail = ref(null);
+const userSearchValue = ref();
 
 function show(pokemon) {
   pokeDetail.value = pokemon;
-  showModal.value = true
-  console.log(pokemon)
+  showModal.value = true;
 }
 
 function hide() {
-  showModal.value = false
+  showModal.value = false;
 }
 
+function setPokemonSearch(searchValue) {
+  userSearchValue.value = searchValue;
+}
 </script>
 
 <template>
   <div class="container">
-    <PokemonSearch />
+    <PokemonSearch @searchPokemonEmit="setPokemonSearch" />
     <PokemonDetail @hideDetail="hide" v-if="showModal" :pokemon="pokeDetail" />
-    <PokemonList @showDetail="show" />
+    <PokemonList @showDetail="show"  :setPokemonSearch="userSearchValue"/>
   </div>
 </template>
 

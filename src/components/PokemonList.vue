@@ -1,7 +1,11 @@
 <template>
   <div class="list">
-    <article @click="$emit('showDetail', pokemon, allPokeArray)" v-for="(pokemon, index) in allPokeArray" :key="index">
-      <img :src=pokemon.image alt="">
+    <article
+      @click="$emit('showDetail', pokemon, allPokeArray)"
+      v-for="(pokemon, index) in allPokeArray"
+      :key="index"
+    >
+      <img :src="pokemon.image" alt="" />
       <h3>{{ pokemon.name }}</h3>
     </article>
   </div>
@@ -9,35 +13,49 @@
 
 <!-- eslint-disable no-unused-vars -->
 <script setup>
+import { defineProps, ref, onMounted, toRefs, watch } from "vue";
+import fetchURL from "../config/config.json";
+const axios = require("axios");
 
-import { defineProps, ref, onMounted } from "vue";
-import BDD from "../config/apiRequest";
+const props = defineProps({
+  setPokemonSearch: String,
+});
+const { setPokemonSearch } = toRefs(props);
+
+watch(setPokemonSearch, (new_value) => {
+  console.log(setPokemonSearch.value);
+});
+
+
+
+// Fetch API
+const infos = ref([]);
+onMounted(async () => {
+  await axios.get(`${fetchURL.API_URL}` + "/pokemon").then((response) => {
+    infos.value = response.data.results;
+    makeAllPokeArray();
+  });
+});
 
 // PokemonList Generation
 let allPokeArray = ref([]);
 
 class Pokemon {
-  constructor(name, image) {
-    this.name = name,
-      this.image = image
+  constructor(name, url, image) {
+    (this.name = name), (this.url = url), (this.image = image);
   }
 }
 
 const makeAllPokeArray = () => {
-  for (const pokemon of BDD) {
+  for (const pokemon of infos.value) {
     const new_pokemon = new Pokemon(
       pokemon.name,
-      pokemon.image
-    )
-    allPokeArray.value.push(new_pokemon)
+      pokemon.url,
+      `${fetchURL.IMG_URL}${pokemon.name}.png`
+    );
+    allPokeArray.value.push(new_pokemon);
   }
-}
-
-onMounted(() => {
-  makeAllPokeArray()
-})
-
-
+};
 </script>
 
 <style lang="scss" scoped>
@@ -78,4 +96,3 @@ img {
   height: 96px;
 }
 </style>
-

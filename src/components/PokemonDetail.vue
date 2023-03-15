@@ -2,23 +2,53 @@
   <div class="detail">
     <div class="detail-view card">
       <div class="data card-body">
-        <img :src=pokemon.image alt="">
-        <h3>{{ pokemon.name }}</h3>
+        <img class="image" :src="pokemon.image" alt="" />
+        <h2 class="card-title">{{ pokemon.name }}</h2>
+        <div class="property">
+          <div class="left bold">Taille</div>
+          <div class="right">{{ pokemonDetail.weight }}</div>
+        </div>
+        <div v-for="(type, index) in pokemonDetail.types" :key="index">
+          <div class="types">
+            <div class="type">
+              <span :class="type.type.name">
+                {{ type.type.name }}
+              </span>
+            </div>
+          </div>
+        </div>
+        <h3></h3>
+        <div v-for="(abilities, index) in pokemonDetail.abilities" :key="index">
+          <div class="abilities">
+            <div class="ability">
+              {{ abilities.ability.name }}
+            </div>
+          </div>
+        </div>
       </div>
       <button @click="$emit('hideDetail')" class="close">Fermer</button>
     </div>
   </div>
 </template>
 
-<script setup >
+<!-- eslint-disable no-unused-vars -->
+<script setup>
+import { defineProps, toRefs, onMounted, ref } from "vue";
 
-import { defineProps } from 'vue';
-
-// eslint-disable-next-line no-unused-vars
 const props = defineProps({
-  pokemon: Object
+  pokemon: Object,
 });
+const { pokemon } = toRefs(props);
 
+// Fetch API
+const axios = require("axios");
+const pokemonDetail = ref([]);
+
+onMounted(async () => {
+  await axios.get(`${pokemon.value.url}`).then((response) => {
+    pokemonDetail.value = response.data;
+  });
+});
 </script>
 
 <style lang="scss" scoped>
@@ -201,7 +231,7 @@ h3 {
 }
 
 .ability {
-  color: rgb(10, 119, 10);
+  color: rgb(24, 79, 182);
   margin: 0 10px 10px 0;
   border-radius: 20px;
   padding: 5px 10px;
@@ -213,6 +243,9 @@ h3 {
   word-break: keep-all;
   background-color: #ffffff;
   border: 3px solid;
+  &:hover {
+    color: rgb(19, 108, 59);
+  }
 }
 
 .close {

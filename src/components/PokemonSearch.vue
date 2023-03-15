@@ -1,37 +1,27 @@
 <template>
   <div class="searchbar">
-    <input v-model="userSearchPokemon" type="text" placeholder="PokeSearch">
+    <input v-model="userSearchPokemon" type="text" placeholder="PokeSearch" />
   </div>
 </template>
 
-
 <!-- eslint-disable no-unused-vars -->
 <script setup>
-import { ref, watch, defineProps } from 'vue';
+import { ref, watch, defineProps, defineEmits } from "vue";
 
 const props = defineProps({
-  pokeArray: Array
+  pokeArray: Array,
 });
-let pokeArray = [];
 
+let pokeArray = [];
 
 let userSearchPokemon = ref("");
 
-let resultSearchPokemon = ref([]);
+//let resultSearchPokemon = ref([]);
+const emit = defineEmits(["searchPokemonEmit"]);
 
 watch(userSearchPokemon, (new_value) => {
-  let regex = RegExp(new_value.toLocaleLowerCase());
-  console.log(new_value)
-
-  let newUserSearchPokemon = pokeArray.filter((item) =>
-    regex.test(item.name.toLocaleLowerCase())
-  );
-
-  new_value == 0
-    ? (resultSearchPokemon.value = [])
-    : (resultSearchPokemon.value = newUserSearchPokemon);
+  emit("searchPokemonEmit", new_value);
 });
-
 </script>
 
 <style scoped>
